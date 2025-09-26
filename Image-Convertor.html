@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Free online image converter tool. Crop, resize, rotate, apply filters, and compress images for web optimization.">
-    <meta name="keywords" content="image converter, crop image, resize image, rotate image, image filters, image compressor">
-    <title>Image Converter Tool | Edit & Optimize Images Online</title>
+    <meta name="description" content="Free online image converter tool. Convert between JPG, JPEG, PNG, WEBP, GIF, and BMP formats with ease.">
+    <meta name="keywords" content="image converter, JPG to PNG, PNG to JPG, WEBP converter, GIF converter, BMP converter">
+    <title>Image Converter Pro | Convert JPG, PNG, WEBP, GIF, BMP Online</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -157,7 +157,7 @@
             display: none;
         }
 
-        .editor-container {
+        .converter-controls {
             display: none;
             background: white;
             border-radius: var(--border-radius);
@@ -166,7 +166,7 @@
             margin-bottom: 2rem;
         }
 
-        .editor-content {
+        .converter-content {
             display: flex;
             flex-direction: column;
             gap: 2rem;
@@ -189,28 +189,52 @@
             display: none;
         }
 
-        .editor-controls {
+        .format-selector {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
         }
 
-        .control-group {
+        .format-option {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
         }
 
-        .control-group h3 {
-            font-size: 1.1rem;
+        .format-option:hover {
+            border-color: var(--primary);
+        }
+
+        .format-option.active {
+            border-color: var(--primary);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .format-option i {
+            font-size: 2rem;
             color: var(--primary);
             margin-bottom: 0.5rem;
+        }
+
+        .format-option span {
+            font-weight: 500;
+        }
+
+        .quality-control {
+            margin: 1.5rem 0;
         }
 
         .slider-container {
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-top: 0.5rem;
         }
 
         .slider-container span {
@@ -236,38 +260,23 @@
             cursor: pointer;
         }
 
-        select, button {
-            padding: 10px 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: var(--border-radius);
-            background: white;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        select:focus, button:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
         button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius);
             background: var(--primary);
             color: white;
-            border: none;
+            font-size: 1rem;
             font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         button:hover {
             background: var(--primary-dark);
-        }
-
-        .btn-secondary {
-            background: var(--gray);
-        }
-
-        .btn-secondary:hover {
-            background: #5a6268;
         }
 
         .btn-success {
@@ -276,6 +285,14 @@
 
         .btn-success:hover {
             background: #218838;
+        }
+
+        .btn-secondary {
+            background: var(--gray);
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
         }
 
         .action-buttons {
@@ -419,12 +436,18 @@
                 font-size: 2rem;
             }
             
-            .editor-controls {
-                grid-template-columns: 1fr;
+            .format-selector {
+                grid-template-columns: repeat(2, 1fr);
             }
             
             .action-buttons {
                 justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .format-selector {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -435,7 +458,7 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <i class="fas fa-image"></i>
+                    <i class="fas fa-exchange-alt"></i>
                     <h1>ImageConverter Pro</h1>
                 </div>
                 <nav>
@@ -453,8 +476,8 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <h2>Edit & Convert Images Online</h2>
-            <p>Crop, resize, rotate, apply filters, and compress images with our free online tool. No registration required!</p>
+            <h2>Convert Images Between Formats</h2>
+            <p>Free online tool to convert images between JPG, JPEG, PNG, WEBP, GIF, and BMP formats. No registration required!</p>
         </div>
     </section>
 
@@ -476,7 +499,7 @@
                 <!-- Upload Area -->
                 <div class="upload-area">
                     <h3>Upload Your Image</h3>
-                    <p>Supports JPG, PNG, GIF, and WEBP formats</p>
+                    <p>Supports JPG, JPEG, PNG, WEBP, GIF, and BMP formats</p>
                     <div class="upload-box" id="upload-trigger">
                         <i class="fas fa-cloud-upload-alt"></i>
                         <h4>Drag & Drop or Click to Upload</h4>
@@ -485,88 +508,55 @@
                     <input type="file" id="file-input" accept="image/*">
                 </div>
 
-                <!-- Editor Container -->
-                <div class="editor-container" id="editor">
-                    <div class="editor-content">
+                <!-- Converter Controls -->
+                <div class="converter-controls" id="converter">
+                    <div class="converter-content">
                         <div class="image-preview">
                             <img id="preview-image" alt="Image Preview">
                             <p id="no-image">Your image will appear here</p>
                         </div>
 
-                        <div class="editor-controls">
-                            <div class="control-group">
-                                <h3>Crop</h3>
-                                <div class="slider-container">
-                                    <span id="crop-width-value">100%</span>
-                                    <input type="range" id="crop-width" min="10" max="100" value="100">
+                        <div>
+                            <h3>Select Output Format</h3>
+                            <div class="format-selector">
+                                <div class="format-option" data-format="jpg">
+                                    <i class="fas fa-file-image"></i>
+                                    <span>JPG</span>
                                 </div>
-                                <div class="slider-container">
-                                    <span id="crop-height-value">100%</span>
-                                    <input type="range" id="crop-height" min="10" max="100" value="100">
+                                <div class="format-option" data-format="jpeg">
+                                    <i class="fas fa-file-image"></i>
+                                    <span>JPEG</span>
                                 </div>
-                                <button id="crop-btn"><i class="fas fa-crop-alt"></i> Apply Crop</button>
-                            </div>
-
-                            <div class="control-group">
-                                <h3>Resize</h3>
-                                <div class="slider-container">
-                                    <span id="width-value">100%</span>
-                                    <input type="range" id="width" min="10" max="200" value="100">
+                                <div class="format-option" data-format="png">
+                                    <i class="fas fa-file-image"></i>
+                                    <span>PNG</span>
                                 </div>
-                                <div class="slider-container">
-                                    <span id="height-value">100%</span>
-                                    <input type="range" id="height" min="10" max="200" value="100">
+                                <div class="format-option" data-format="webp">
+                                    <i class="fas fa-file-image"></i>
+                                    <span>WEBP</span>
                                 </div>
-                                <button id="resize-btn"><i class="fas fa-expand-alt"></i> Apply Resize</button>
-                            </div>
-
-                            <div class="control-group">
-                                <h3>Rotate & Flip</h3>
-                                <div class="slider-container">
-                                    <span id="rotate-value">0°</span>
-                                    <input type="range" id="rotate" min="0" max="360" value="0">
+                                <div class="format-option" data-format="gif">
+                                    <i class="fas fa-file-image"></i>
+                                    <span>GIF</span>
                                 </div>
-                                <div class="action-buttons">
-                                    <button id="flip-h"><i class="fas fa-arrows-alt-h"></i> Flip H</button>
-                                    <button id="flip-v"><i class="fas fa-arrows-alt-v"></i> Flip V</button>
+                                <div class="format-option" data-format="bmp">
+                                    <i class="fas fa-file-image"></i>
+                                    <span>BMP</span>
                                 </div>
                             </div>
 
-                            <div class="control-group">
-                                <h3>Filters</h3>
-                                <select id="filter-select">
-                                    <option value="none">No Filter</option>
-                                    <option value="grayscale">Grayscale</option>
-                                    <option value="sepia">Sepia</option>
-                                    <option value="blur">Blur</option>
-                                    <option value="brightness">Brightness</option>
-                                    <option value="contrast">Contrast</option>
-                                </select>
-                                <div class="slider-container" id="filter-intensity-container" style="display: none;">
-                                    <span id="filter-value">100%</span>
-                                    <input type="range" id="filter-intensity" min="0" max="200" value="100">
-                                </div>
-                                <button id="apply-filter"><i class="fas fa-magic"></i> Apply Filter</button>
-                            </div>
-
-                            <div class="control-group">
-                                <h3>Compression</h3>
+                            <div class="quality-control">
+                                <h3>Quality Settings</h3>
                                 <div class="slider-container">
                                     <span id="quality-value">80%</span>
                                     <input type="range" id="quality" min="10" max="100" value="80">
                                 </div>
-                                <select id="format-select">
-                                    <option value="jpeg">JPEG</option>
-                                    <option value="png">PNG</option>
-                                    <option value="webp">WEBP</option>
-                                </select>
-                                <button id="compress-btn"><i class="fas fa-compress-alt"></i> Compress Image</button>
                             </div>
-                        </div>
 
-                        <div class="action-buttons">
-                            <button id="reset-btn" class="btn-secondary"><i class="fas fa-undo"></i> Reset</button>
-                            <button id="download-btn" class="btn-success"><i class="fas fa-download"></i> Download Image</button>
+                            <div class="action-buttons">
+                                <button id="reset-btn" class="btn-secondary"><i class="fas fa-undo"></i> Reset</button>
+                                <button id="convert-btn" class="btn-success"><i class="fas fa-sync-alt"></i> Convert Image</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -576,6 +566,14 @@
                     <h3>Conversion Results</h3>
                     <div class="result-info">
                         <div class="info-item">
+                            <span>Original Format</span>
+                            <span id="original-format">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span>New Format</span>
+                            <span id="new-format">-</span>
+                        </div>
+                        <div class="info-item">
                             <span>Original Size</span>
                             <span id="original-size">0 KB</span>
                         </div>
@@ -583,14 +581,10 @@
                             <span>New Size</span>
                             <span id="new-size">0 KB</span>
                         </div>
-                        <div class="info-item">
-                            <span>Reduction</span>
-                            <span id="reduction">0%</span>
-                        </div>
                     </div>
                     <div class="download-area">
-                        <p>Your image is ready for download</p>
-                        <button id="final-download" class="btn-success"><i class="fas fa-download"></i> Download Converted Image</button>
+                        <p>Your image has been converted successfully</p>
+                        <button id="download-btn" class="btn-success"><i class="fas fa-download"></i> Download Converted Image</button>
                     </div>
                 </div>
             </div>
@@ -624,7 +618,7 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>ImageConverter Pro</h3>
-                    <p>Free online image editing and conversion tool. Optimize your images for web and social media.</p>
+                    <p>Free online image conversion tool. Convert between popular image formats with ease.</p>
                 </div>
                 <div class="footer-section">
                     <h3>Quick Links</h3>
@@ -636,12 +630,12 @@
                     </ul>
                 </div>
                 <div class="footer-section">
-                    <h3>Tools</h3>
+                    <h3>Supported Formats</h3>
                     <ul>
-                        <li><a href="#">Image Compressor</a></li>
-                        <li><a href="#">Image Resizer</a></li>
-                        <li><a href="#">Format Converter</a></li>
-                        <li><a href="#">Background Remover</a></li>
+                        <li><a href="#">JPG to PNG</a></li>
+                        <li><a href="#">PNG to JPG</a></li>
+                        <li><a href="#">WEBP Converter</a></li>
+                        <li><a href="#">GIF Converter</a></li>
                     </ul>
                 </div>
             </div>
@@ -655,53 +649,33 @@
         // DOM Elements
         const fileInput = document.getElementById('file-input');
         const uploadTrigger = document.getElementById('upload-trigger');
-        const editor = document.getElementById('editor');
+        const converter = document.getElementById('converter');
         const previewImage = document.getElementById('preview-image');
         const noImage = document.getElementById('no-image');
         const results = document.getElementById('results');
         
+        // Format selection elements
+        const formatOptions = document.querySelectorAll('.format-option');
+        
         // Control elements
-        const cropWidth = document.getElementById('crop-width');
-        const cropHeight = document.getElementById('crop-height');
-        const cropWidthValue = document.getElementById('crop-width-value');
-        const cropHeightValue = document.getElementById('crop-height-value');
-        const cropBtn = document.getElementById('crop-btn');
-        
-        const width = document.getElementById('width');
-        const height = document.getElementById('height');
-        const widthValue = document.getElementById('width-value');
-        const heightValue = document.getElementById('height-value');
-        const resizeBtn = document.getElementById('resize-btn');
-        
-        const rotate = document.getElementById('rotate');
-        const rotateValue = document.getElementById('rotate-value');
-        const flipH = document.getElementById('flip-h');
-        const flipV = document.getElementById('flip-v');
-        
-        const filterSelect = document.getElementById('filter-select');
-        const filterIntensity = document.getElementById('filter-intensity');
-        const filterValue = document.getElementById('filter-value');
-        const filterIntensityContainer = document.getElementById('filter-intensity-container');
-        const applyFilter = document.getElementById('apply-filter');
-        
         const quality = document.getElementById('quality');
         const qualityValue = document.getElementById('quality-value');
-        const formatSelect = document.getElementById('format-select');
-        const compressBtn = document.getElementById('compress-btn');
-        
+        const convertBtn = document.getElementById('convert-btn');
         const resetBtn = document.getElementById('reset-btn');
         const downloadBtn = document.getElementById('download-btn');
-        const finalDownload = document.getElementById('final-download');
         
         // Result elements
+        const originalFormat = document.getElementById('original-format');
+        const newFormat = document.getElementById('new-format');
         const originalSize = document.getElementById('original-size');
         const newSize = document.getElementById('new-size');
-        const reduction = document.getElementById('reduction');
         
         // State variables
         let originalImage = null;
         let currentImage = null;
         let originalFileSize = 0;
+        let originalFileType = '';
+        let selectedFormat = 'jpg';
         
         // Event Listeners
         uploadTrigger.addEventListener('click', () => fileInput.click());
@@ -726,53 +700,27 @@
             }
         });
         
-        // Update slider values
-        cropWidth.addEventListener('input', () => {
-            cropWidthValue.textContent = `${cropWidth.value}%`;
+        // Format selection
+        formatOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                formatOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                selectedFormat = option.getAttribute('data-format');
+            });
         });
         
-        cropHeight.addEventListener('input', () => {
-            cropHeightValue.textContent = `${cropHeight.value}%`;
-        });
+        // Set JPG as default selected format
+        document.querySelector('.format-option[data-format="jpg"]').classList.add('active');
         
-        width.addEventListener('input', () => {
-            widthValue.textContent = `${width.value}%`;
-        });
-        
-        height.addEventListener('input', () => {
-            heightValue.textContent = `${height.value}%`;
-        });
-        
-        rotate.addEventListener('input', () => {
-            rotateValue.textContent = `${rotate.value}°`;
-        });
-        
+        // Update slider value
         quality.addEventListener('input', () => {
             qualityValue.textContent = `${quality.value}%`;
         });
         
-        filterSelect.addEventListener('change', () => {
-            if (filterSelect.value === 'none') {
-                filterIntensityContainer.style.display = 'none';
-            } else {
-                filterIntensityContainer.style.display = 'flex';
-            }
-        });
-        
-        filterIntensity.addEventListener('input', () => {
-            filterValue.textContent = `${filterIntensity.value}%`;
-        });
-        
         // Button event listeners
-        cropBtn.addEventListener('click', applyCrop);
-        resizeBtn.addEventListener('click', applyResize);
-        flipH.addEventListener('click', () => applyFlip('horizontal'));
-        flipV.addEventListener('click', () => applyFlip('vertical'));
-        applyFilter.addEventListener('click', applyImageFilter);
-        compressBtn.addEventListener('click', compressImage);
-        resetBtn.addEventListener('click', resetImage);
+        convertBtn.addEventListener('click', convertImage);
+        resetBtn.addEventListener('click', resetConverter);
         downloadBtn.addEventListener('click', downloadImage);
-        finalDownload.addEventListener('click', downloadImage);
         
         // Functions
         function handleImageUpload(file) {
@@ -787,6 +735,8 @@
             }
             
             originalFileSize = file.size;
+            originalFileType = file.type.split('/')[1].toUpperCase();
+            originalFormat.textContent = originalFileType;
             originalSize.textContent = formatFileSize(originalFileSize);
             
             const reader = new FileReader();
@@ -794,7 +744,7 @@
                 previewImage.src = e.target.result;
                 previewImage.style.display = 'block';
                 noImage.style.display = 'none';
-                editor.style.display = 'block';
+                converter.style.display = 'block';
                 
                 originalImage = new Image();
                 originalImage.onload = function() {
@@ -805,179 +755,7 @@
             reader.readAsDataURL(file);
         }
         
-        function applyCrop() {
-            if (!currentImage) return;
-            
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            const cropWidthPercent = parseInt(cropWidth.value) / 100;
-            const cropHeightPercent = parseInt(cropHeight.value) / 100;
-            
-            canvas.width = currentImage.width * cropWidthPercent;
-            canvas.height = currentImage.height * cropHeightPercent;
-            
-            ctx.drawImage(
-                currentImage,
-                0, 0,
-                canvas.width, canvas.height,
-                0, 0,
-                canvas.width, canvas.height
-            );
-            
-            updatePreview(canvas.toDataURL());
-        }
-        
-        function applyResize() {
-            if (!currentImage) return;
-            
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            const widthPercent = parseInt(width.value) / 100;
-            const heightPercent = parseInt(height.value) / 100;
-            
-            canvas.width = currentImage.width * widthPercent;
-            canvas.height = currentImage.height * heightPercent;
-            
-            ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
-            
-            updatePreview(canvas.toDataURL());
-        }
-        
-        function applyFlip(direction) {
-            if (!currentImage) return;
-            
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = currentImage.width;
-            canvas.height = currentImage.height;
-            
-            if (direction === 'horizontal') {
-                ctx.translate(canvas.width, 0);
-                ctx.scale(-1, 1);
-            } else {
-                ctx.translate(0, canvas.height);
-                ctx.scale(1, -1);
-            }
-            
-            ctx.drawImage(currentImage, 0, 0);
-            
-            updatePreview(canvas.toDataURL());
-        }
-        
-        function applyImageFilter() {
-            if (!currentImage) return;
-            
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = currentImage.width;
-            canvas.height = currentImage.height;
-            
-            ctx.drawImage(currentImage, 0, 0);
-            
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imageData.data;
-            const intensity = parseInt(filterIntensity.value) / 100;
-            
-            switch(filterSelect.value) {
-                case 'grayscale':
-                    for (let i = 0; i < data.length; i += 4) {
-                        const avg = data[i] * 0.3 + data[i + 1] * 0.59 + data[i + 2] * 0.11;
-                        data[i] = data[i] * (1 - intensity) + avg * intensity;
-                        data[i + 1] = data[i + 1] * (1 - intensity) + avg * intensity;
-                        data[i + 2] = data[i + 2] * (1 - intensity) + avg * intensity;
-                    }
-                    break;
-                case 'sepia':
-                    for (let i = 0; i < data.length; i += 4) {
-                        const r = data[i];
-                        const g = data[i + 1];
-                        const b = data[i + 2];
-                        
-                        data[i] = Math.min(255, (r * (1 - (0.393 * intensity)) + (g * (0.769 * intensity)) + (b * (0.189 * intensity))));
-                        data[i + 1] = Math.min(255, (r * (0.349 * intensity)) + (g * (1 - (0.686 * intensity)) + (b * (0.168 * intensity))));
-                        data[i + 2] = Math.min(255, (r * (0.272 * intensity)) + (g * (0.534 * intensity)) + (b * (1 - (0.131 * intensity))));
-                    }
-                    break;
-                case 'blur':
-                    // Simple box blur implementation
-                    const blurRadius = Math.floor(intensity * 10);
-                    if (blurRadius > 0) {
-                        const tempCanvas = document.createElement('canvas');
-                        const tempCtx = tempCanvas.getContext('2d');
-                        tempCanvas.width = canvas.width;
-                        tempCanvas.height = canvas.height;
-                        
-                        tempCtx.drawImage(currentImage, 0, 0);
-                        
-                        for (let i = 0; i < blurRadius; i++) {
-                            const tempImageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-                            boxBlur(tempImageData, 1);
-                            tempCtx.putImageData(tempImageData, 0, 0);
-                        }
-                        
-                        ctx.drawImage(tempCanvas, 0, 0);
-                        updatePreview(canvas.toDataURL());
-                        return;
-                    }
-                    break;
-                case 'brightness':
-                    for (let i = 0; i < data.length; i += 4) {
-                        data[i] = Math.min(255, data[i] * intensity);
-                        data[i + 1] = Math.min(255, data[i + 1] * intensity);
-                        data[i + 2] = Math.min(255, data[i + 2] * intensity);
-                    }
-                    break;
-                case 'contrast':
-                    const factor = (259 * (intensity + 255)) / (255 * (259 - intensity));
-                    for (let i = 0; i < data.length; i += 4) {
-                        data[i] = Math.min(255, factor * (data[i] - 128) + 128);
-                        data[i + 1] = Math.min(255, factor * (data[i + 1] - 128) + 128);
-                        data[i + 2] = Math.min(255, factor * (data[i + 2] - 128) + 128);
-                    }
-                    break;
-            }
-            
-            ctx.putImageData(imageData, 0, 0);
-            updatePreview(canvas.toDataURL());
-        }
-        
-        function boxBlur(imageData, radius) {
-            const data = imageData.data;
-            const width = imageData.width;
-            const height = imageData.height;
-            
-            for (let y = 0; y < height; y++) {
-                for (let x = 0; x < width; x++) {
-                    let r = 0, g = 0, b = 0, count = 0;
-                    
-                    for (let dy = -radius; dy <= radius; dy++) {
-                        for (let dx = -radius; dx <= radius; dx++) {
-                            const nx = x + dx;
-                            const ny = y + dy;
-                            
-                            if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                                const index = (ny * width + nx) * 4;
-                                r += data[index];
-                                g += data[index + 1];
-                                b += data[index + 2];
-                                count++;
-                            }
-                        }
-                    }
-                    
-                    const index = (y * width + x) * 4;
-                    data[index] = r / count;
-                    data[index + 1] = g / count;
-                    data[index + 2] = b / count;
-                }
-            }
-        }
-        
-        function compressImage() {
+        function convertImage() {
             if (!currentImage) return;
             
             const canvas = document.createElement('canvas');
@@ -989,8 +767,14 @@
             ctx.drawImage(currentImage, 0, 0);
             
             let mimeType = 'image/jpeg';
-            if (formatSelect.value === 'png') mimeType = 'image/png';
-            if (formatSelect.value === 'webp') mimeType = 'image/webp';
+            if (selectedFormat === 'png') mimeType = 'image/png';
+            if (selectedFormat === 'webp') mimeType = 'image/webp';
+            if (selectedFormat === 'gif') mimeType = 'image/gif';
+            if (selectedFormat === 'bmp') {
+                // BMP conversion requires special handling
+                convertToBMP(canvas);
+                return;
+            }
             
             const qualityValue = parseInt(quality.value) / 100;
             const dataURL = canvas.toDataURL(mimeType, qualityValue);
@@ -999,41 +783,84 @@
             
             // Calculate file sizes
             const newFileSize = Math.round((dataURL.length * 3) / 4); // Approximate size
-            const reductionPercent = ((originalFileSize - newFileSize) / originalFileSize * 100).toFixed(1);
             
+            newFormat.textContent = selectedFormat.toUpperCase();
             newSize.textContent = formatFileSize(newFileSize);
-            reduction.textContent = `${reductionPercent}%`;
             
             results.style.display = 'block';
         }
         
-        function resetImage() {
+        function convertToBMP(canvas) {
+            // Simple BMP conversion (basic implementation)
+            const ctx = canvas.getContext('2d');
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            
+            // Create BMP header (basic implementation)
+            const fileSize = 54 + (canvas.width * canvas.height * 3);
+            const bmpHeader = new ArrayBuffer(54);
+            const headerView = new DataView(bmpHeader);
+            
+            // BMP file header
+            headerView.setUint8(0, 0x42); // 'B'
+            headerView.setUint8(1, 0x4D); // 'M'
+            headerView.setUint32(2, fileSize, true); // File size
+            headerView.setUint32(10, 54, true); // Pixel data offset
+            
+            // BMP info header
+            headerView.setUint32(14, 40, true); // Info header size
+            headerView.setInt32(18, canvas.width, true); // Width
+            headerView.setInt32(22, -canvas.height, true); // Height (negative for top-down)
+            headerView.setUint16(26, 1, true); // Planes
+            headerView.setUint16(28, 24, true); // Bits per pixel
+            headerView.setUint32(30, 0, true); // Compression
+            headerView.setUint32(34, 0, true); // Image size
+            headerView.setInt32(38, 0, true); // X pixels per meter
+            headerView.setInt32(42, 0, true); // Y pixels per meter
+            headerView.setUint32(46, 0, true); // Colors used
+            headerView.setUint32(50, 0, true); // Important colors
+            
+            // Create pixel data
+            const pixelData = new Uint8Array(canvas.width * canvas.height * 3);
+            let offset = 0;
+            
+            for (let y = 0; y < canvas.height; y++) {
+                for (let x = 0; x < canvas.width; x++) {
+                    const i = (y * canvas.width + x) * 4;
+                    // BMP stores pixels as BGR
+                    pixelData[offset] = data[i + 2]; // Blue
+                    pixelData[offset + 1] = data[i + 1]; // Green
+                    pixelData[offset + 2] = data[i]; // Red
+                    offset += 3;
+                }
+            }
+            
+            // Combine header and pixel data
+            const bmpData = new Uint8Array(fileSize);
+            bmpData.set(new Uint8Array(bmpHeader), 0);
+            bmpData.set(pixelData, 54);
+            
+            // Create blob and update preview
+            const blob = new Blob([bmpData], {type: 'image/bmp'});
+            const url = URL.createObjectURL(blob);
+            
+            updatePreview(url);
+            
+            // Calculate file sizes
+            newFormat.textContent = 'BMP';
+            newSize.textContent = formatFileSize(fileSize);
+            
+            results.style.display = 'block';
+        }
+        
+        function resetConverter() {
             if (originalImage) {
                 previewImage.src = originalImage.src;
                 currentImage = originalImage;
                 
-                // Reset all controls
-                cropWidth.value = 100;
-                cropHeight.value = 100;
-                cropWidthValue.textContent = '100%';
-                cropHeightValue.textContent = '100%';
-                
-                width.value = 100;
-                height.value = 100;
-                widthValue.textContent = '100%';
-                heightValue.textContent = '100%';
-                
-                rotate.value = 0;
-                rotateValue.textContent = '0°';
-                
-                filterSelect.value = 'none';
-                filterIntensityContainer.style.display = 'none';
-                filterIntensity.value = 100;
-                filterValue.textContent = '100%';
-                
+                // Reset controls
                 quality.value = 80;
                 qualityValue.textContent = '80%';
-                formatSelect.value = 'jpeg';
                 
                 results.style.display = 'none';
             }
@@ -1043,7 +870,7 @@
             if (!currentImage) return;
             
             const link = document.createElement('a');
-            link.download = `converted-image.${formatSelect.value}`;
+            link.download = `converted-image.${selectedFormat}`;
             link.href = previewImage.src;
             link.click();
         }
